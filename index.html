@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokemon API Demo</title>
+</head>
+<body>
+<h1>Pokemon API Demo</h1>
+<button id="loadPokemon">Загрузить случайного покемона</button>
+<div id="pokemonInfo"></div>
+
+<script>
+  const loadPokemonBtn = document.getElementById('loadPokemon');
+  const pokemonInfoDiv = document.getElementById('pokemonInfo');
+
+  loadPokemonBtn.addEventListener('click', () => {
+    fetch('https://pokeapi.co/api/v2/pokemon/')
+            .then(response => response.json())
+            .then(data => {
+              const randomPokemon = data.results[Math.floor(Math.random() * data.results.length)];
+
+              fetch(randomPokemon.url)
+                      .then(response => response.json())
+                      .then(pokemonData => {
+                        pokemonInfoDiv.innerHTML = `
+                <h2>${pokemonData.name}</h2>
+                <img src="${pokemonData.sprites.front_default}" alt="${pokemonData.name}">
+                <p>Вес: ${pokemonData.weight}</p>
+                <p>Рост: ${pokemonData.height}</p>
+              `;
+                      })
+                      .catch(error => {
+                        console.error('Ошибка при получении информации о покемоне:', error);
+                        pokemonInfoDiv.innerHTML = 'Ошибка при загрузке информации о покемоне';
+                      });
+            })
+            .catch(error => {
+              console.error('Ошибка при загрузке списка покемонов:', error);
+              pokemonInfoDiv.innerHTML = 'Ошибка при загрузке списка покемонов';
+            });
+  });
+</script>
+</body>
+</html>
